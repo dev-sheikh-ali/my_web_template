@@ -48,15 +48,23 @@ def login_view(request):
         form = CustomUserLoginForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
-
             if not user.is_email_verified:
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({'success': False, 'message': "Your email is not verified. Please check your inbox."})
                 messages.error(request, "Your email is not verified. Please check your inbox.")
             else:
                 login(request, user)
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({'success': True, 'message': "Login successful!", 'redirect_url': reverse('home')})
                 messages.success(request, "Login successful!")
+            return redirect('home')
         else:
-            messages.error(request, "Invalid username or password.")
-    
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                errors = {field: form.errors[field].as_text() for field in form.errors}
+                return JsonResponse({'success': False, 'message': "Login failed. Please correct the errors below.", 'errors': errors})
+            for field, error_list in form.errors.items():
+                for error in error_list:
+                    messages.error(request, f"{field}: {error}")
     return redirect('home')
 
 def signup_view(request):
@@ -66,10 +74,7 @@ def signup_view(request):
             user = form.save(commit=False)
             user.is_active = False  # Deactivate until email is verified
             user.save()
-
-            # Send verification email
             send_verification_email(user)
-
             request.session['pending_user_id'] = user.id
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 return JsonResponse({'success': True, 'redirect_url': reverse('otp_verification')})
@@ -79,7 +84,9 @@ def signup_view(request):
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 errors = {field: form.errors[field].as_text() for field in form.errors}
                 return JsonResponse({'success': False, 'message': "Signup failed. Please correct the errors below.", 'errors': errors})
-            messages.error(request, "Signup failed. Please correct the errors below.")
+            for field, error_list in form.errors.items():
+                for error in error_list:
+                    messages.error(request, f"{field}: {error}")
             return render(request, 'pages/home.html', {
                 'signup_form': form,
                 'login_form': CustomUserLoginForm()  # Reset login form as well
@@ -117,6 +124,7 @@ def otp_verification_view(request):
 
     return render(request, 'users/otp_verification.html', {'form': form})
 
+
 def logout_view(request):
     logout(request)
     messages.success(request, "Logged out successfully!")
@@ -129,12 +137,16 @@ def profile_view(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Profile updated successfully.")
-            return JsonResponse({'success': True, 'redirect_url': reverse('home')})
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'success': True, 'redirect_url': reverse('home')})
+            return redirect('home')
         else:
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 errors = {field: form.errors[field].as_text() for field in form.errors}
                 return JsonResponse({'success': False, 'message': "Profile update failed. Please correct the errors below.", 'errors': errors})
-            messages.error(request, "Please correct the errors below.")
+            for field, error_list in form.errors.items():
+                for error in error_list:
+                    messages.error(request, f"{field}: {error}")
             return render(request, 'pages/home.html', {
                 'signup_form': CustomUserSignupForm(),
                 'login_form': CustomUserLoginForm(),
