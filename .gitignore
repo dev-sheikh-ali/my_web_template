@@ -1,0 +1,38 @@
+# Python
+*.py[cod]
+__pycache__/
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+
+# Virtual Environment
+venv/
+env/
+
+# Django
+db.sqlite3
+*.log
+*.pot
+*.py[co]
+*.sqlite3
+
+# Environment Variables
+.env
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+
+# Static and Media Files
+staticfiles/
+media/
+
+# Django Migrations
+**/migrations/*.py
+!**/migrations/__init__.py
+
+# Test Coverage Files
+*.coverage
+.coverage.*
