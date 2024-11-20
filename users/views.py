@@ -129,8 +129,11 @@ def profile_view(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Profile updated successfully.")
-            return redirect('home')
+            return JsonResponse({'success': True, 'redirect_url': reverse('home')})
         else:
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                errors = {field: form.errors[field].as_text() for field in form.errors}
+                return JsonResponse({'success': False, 'message': "Profile update failed. Please correct the errors below.", 'errors': errors})
             messages.error(request, "Please correct the errors below.")
             return render(request, 'pages/home.html', {
                 'signup_form': CustomUserSignupForm(),

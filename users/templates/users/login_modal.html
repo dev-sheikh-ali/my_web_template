@@ -1,3 +1,4 @@
+{% load form_tags %}
 <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -8,32 +9,14 @@
                 </button>
             </div>
             <div class="modal-body">
-                {% if messages %}
-                    <div class="alert-container mb-3">
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                                {{ message }}
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-
-                <form method="POST" action="{% url 'login' %}">
+                <div id="loginAlertContainer"></div>
+                <form method="POST" id="loginForm" action="{% url 'login' %}">
                     {% csrf_token %}
                     {% for field in login_form %}
                         <div class="form-group">
                             {{ field.label_tag }}
-                            {{ field }}
-                            {% if field.errors %}
-                                <div class="invalid-feedback d-block">
-                                    {% for error in field.errors %}
-                                        {{ error }}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
+                            {{ field|add_class:"form-control" }}
+                            <div class="invalid-feedback d-block" id="error-{{ field.name }}"></div>
                         </div>
                     {% endfor %}
                     <button type="submit" class="btn btn-primary btn-block">Login</button>
