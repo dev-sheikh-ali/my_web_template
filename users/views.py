@@ -19,9 +19,11 @@ logger = logging.getLogger(__name__)
 def home(request):
     signup_form = CustomUserSignupForm()
     login_form = CustomUserLoginForm()
+    profile_form = CustomUserProfileForm(instance=request.user) if request.user.is_authenticated else None
     return render(request, 'pages/home.html', {
         'signup_form': signup_form,
-        'login_form': login_form
+        'login_form': login_form,
+        'profile_form': profile_form,
     })
 
 def activate_account_view(request, uidb64, token):
@@ -127,7 +129,12 @@ def profile_view(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Profile updated successfully.")
-            return redirect('profile')
-    else:
-        form = CustomUserProfileForm(instance=request.user)
-    return render(request, 'users/profile.html', {'form': form})
+            return redirect('home')
+        else:
+            messages.error(request, "Please correct the errors below.")
+            return render(request, 'pages/home.html', {
+                'signup_form': CustomUserSignupForm(),
+                'login_form': CustomUserLoginForm(),
+                'profile_form': form,
+            })
+    return redirect('home')
