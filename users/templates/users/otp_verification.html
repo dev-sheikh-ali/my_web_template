@@ -1,0 +1,18 @@
+<!-- verification with otp
+ /users/templates/users/otp_verification.html -->
+
+ {% extends 'pages/base.html' %}
+
+ {% block title %}OTP Verification{% endblock %}
+ 
+ {% block content %}
+ <div class="container mt-4">
+     <h2>Two-Factor Authentication</h2>
+     <p>We have sent a one-time password (OTP) to your registered email. Please enter it below to proceed.</p>
+     <form method="POST" id="otpForm">
+         {% csrf_token %}
+         {{ form.as_p }}
+         <button type="submit" class="btn btn-primary">Verify OTP</button>
+     </form>
+ </div>
+ {% endblock %}
