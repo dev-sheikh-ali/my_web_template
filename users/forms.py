@@ -48,9 +48,14 @@ class CustomUserLoginForm(AuthenticationForm):
         fields = ['username', 'password']
 
 class CustomUserProfileForm(forms.ModelForm):
+    date_of_birth = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date', 'placeholder': 'YYYY-MM-DD'}), 
+        required=False
+    )
+
     class Meta:
         model = CustomUser
-        fields = ['date_of_birth', 'profile_picture_url', 'bio', 'email_notifications_enabled']
+        fields = ['first_name', 'last_name', 'date_of_birth', 'profile_picture_url', 'bio', 'email_notifications_enabled']
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
