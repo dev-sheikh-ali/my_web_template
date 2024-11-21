@@ -49,48 +49,82 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             if not user.is_email_verified:
+                message = "Your email is not verified. Please check your inbox."
                 if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                    return JsonResponse({'success': False, 'message': "Your email is not verified. Please check your inbox."})
-                messages.error(request, "Your email is not verified. Please check your inbox.")
+                    return JsonResponse({'success': False, 'message': message})
+                messages.error(request, message)
+                return redirect('home')
             else:
                 login(request, user)
+                message = "Login successful!"
                 if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                    return JsonResponse({'success': True, 'message': "Login successful!", 'redirect_url': reverse('home')})
-                messages.success(request, "Login successful!")
-            return redirect('home')
+                    return JsonResponse({'success': True, 'message': message, 'redirect_url': reverse('home')})
+                messages.success(request, message)
+                return redirect('home')
         else:
+            # Handle form errors
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 errors = {field: form.errors[field].as_text() for field in form.errors}
-                return JsonResponse({'success': False, 'message': "Login failed. Please correct the errors below.", 'errors': errors})
+                # Add a general error message if credentials are incorrect
+                general_error = form.non_field_errors().as_text()
+                return JsonResponse({
+                    'success': False,
+                    'message': general_error or "Login failed. Please correct the errors below.",
+                    'errors': errors
+                })
+
+            # For non-AJAX, add detailed errors to the messages framework
             for field, error_list in form.errors.items():
                 for error in error_list:
-                    messages.error(request, f"{field}: {error}")
+                    messages.error(request, f"{field.capitalize()}: {error}")
+            for error in form.non_field_errors():
+                messages.error(request, error)
+
+            return render(request, 'pages/home.html', {
+                'signup_form': CustomUserSignupForm(),  # Reset signup form
+                'login_form': form,  # Pass login form with errors
+            })
     return redirect('home')
+
 
 def signup_view(request):
     if request.method == "POST":
         form = CustomUserSignupForm(request.POST)
         if form.is_valid():
+            # Create the user but deactivate it until email is verified
             user = form.save(commit=False)
-            user.is_active = False  # Deactivate until email is verified
+            user.is_active = False
             user.save()
             send_verification_email(user)
             request.session['pending_user_id'] = user.id
-            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+
+            # Handle success messages and redirect via AJAX or standard flow
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':  # Check for AJAX request
                 return JsonResponse({'success': True, 'redirect_url': reverse('otp_verification')})
-            messages.success(request, "Account created successfully! Please verify your email to activate your account.")
-            return redirect('otp_verification')
+            else:
+                messages.success(request, "Account created successfully! Please verify your email to activate your account.")
+                return redirect('otp_verification')  # Regular redirect for non-AJAX requests
         else:
-            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                errors = {field: form.errors[field].as_text() for field in form.errors}
-                return JsonResponse({'success': False, 'message': "Signup failed. Please correct the errors below.", 'errors': errors})
+            # Handle form errors
+            errors = {field: form.errors[field].as_text() for field in form.errors}
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':  # Check for AJAX request
+                return JsonResponse({
+                    'success': False,
+                    'message': "Signup failed. Please correct the errors below.",
+                    'errors': errors
+                })
+
+            # Add specific field error messages to the messages framework
             for field, error_list in form.errors.items():
                 for error in error_list:
-                    messages.error(request, f"{field}: {error}")
+                    messages.error(request, f"{field.capitalize()}: {error}")
+
+            # Render the home page with signup form errors displayed
             return render(request, 'pages/home.html', {
                 'signup_form': form,
-                'login_form': CustomUserLoginForm()  # Reset login form as well
+                'login_form': CustomUserLoginForm(),  # Reset login form
             })
+
     return redirect('home')
 
 def otp_verification_view(request):

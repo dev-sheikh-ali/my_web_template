@@ -1,0 +1,122 @@
+/* General body styling */
+body {
+    background-color: #f8f9fa; /* Light background for better contrast */
+}
+
+/* Modal Header */
+.modal-header {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.modal-header .close {
+    color: #fff;
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+/* Buttons Styling */
+.btn-primary, .btn-success {
+    padding: 0.75rem 1.25rem;
+    font-size: 1.1rem;
+}
+
+/* General Navbar Styling */
+.navbar {
+    background-color: #ffffff; /* White background */
+    border-bottom: 2px solid #007bff; /* Blue border at the bottom */
+}
+
+/* Navbar Brand Styling */
+.navbar-brand {
+    font-size: 1.7rem;
+    font-weight: bold;
+    color: #007bff;
+    display: flex;
+    align-items: center;
+    transition: color 0.3s ease;
+}
+
+/* Navbar Brand Hover */
+.navbar-brand:hover {
+    color: #0056b3;
+}
+
+/* Profile Icon Circle */
+.navbar-nav .nav-item .nav-link .rounded-circle {
+    background-color: #f0f0f0;
+    border: 2px solid #007bff;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+/* Profile Icon Hover Effect */
+.navbar-nav .nav-item .nav-link:hover .rounded-circle {
+    background-color: #007bff;
+    border-color: #0056b3;
+}
+
+/* Profile Dropdown Menu */
+.navbar-nav .nav-item .dropdown-menu {
+    min-width: 160px;
+    border-radius: 5px;
+    border: 1px solid #007bff;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+}
+
+/* Profile Dropdown Item Styling */
+.navbar-nav .nav-item .dropdown-item {
+    font-size: 1.1rem;
+    padding: 12px 15px;
+    color: #333;
+    transition: background-color 0.3s ease;
+}
+
+/* Profile Dropdown Item Hover */
+.navbar-nav .nav-item .dropdown-item:hover {
+    background-color: #f1f1f1;
+    color: #007bff;
+}
+
+/* Buttons for Login/Signup */
+.navbar-nav .nav-item .nav-link.btn {
+    background-color: #ffffff;
+    color: #007bff;
+    border: 1px solid #007bff;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    font-size: 1.1rem;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+}
+
+/* Button Hover Effect for Login/Signup */
+.navbar-nav .nav-item .nav-link.btn:hover,
+.navbar-nav .nav-item .nav-link.btn:focus {
+    background-color: #007bff;
+    color: #ffffff;
+    border-color: #0056b3;
+}
+
+/* Ensure the navbar is responsive */
+.navbar-nav .nav-item {
+    margin-left: 15px; /* Add spacing between nav items */
+}
+
+/* Mobile view: Stack navbar items vertically */
+@media (max-width: 767px) {
+    .navbar-nav {
+        text-align: center;
+        width: 100%;
+    }
+    .navbar-nav .nav-item {
+        margin: 10px 0;
+    }
+}
