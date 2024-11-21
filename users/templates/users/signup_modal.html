@@ -9,7 +9,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <!-- Alert container for displaying success messages (message modal) -->
+                <!-- Alert container for displaying general messages -->
                 <div id="signupAlertContainer"></div>
 
                 <!-- Signup Form -->
@@ -19,7 +19,7 @@
                         <div class="form-group">
                             {{ field.label_tag }}
                             {{ field|add_class:"form-control" }}
-                            <!-- Field-specific error container (handled by Django) -->
+                            <!-- Field-specific error container -->
                             <div class="invalid-feedback d-block" id="error-{{ field.name }}">
                                 {% if field.errors %}
                                     {% for error in field.errors %}
@@ -29,6 +29,9 @@
                             </div>
                         </div>
                     {% endfor %}
+                    <div class="form-group">
+                        <p>By signing up, you agree to the <a href="#" class="text-primary">terms and conditions</a>.</p>
+                    </div>
                     <button type="submit" class="btn btn-primary btn-block">Signup</button>
                 </form>
             </div>

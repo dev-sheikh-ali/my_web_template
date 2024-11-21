@@ -7,7 +7,7 @@ class CustomUser(AbstractUser):
     bio = models.TextField(blank=True, null=True)
     is_email_verified = models.BooleanField(default=False)
     is_account_deletion_requested = models.BooleanField(default=False)
-    consent_given = models.BooleanField(default=False)
+    consent_given = models.BooleanField(default=True)
     email_notifications_enabled = models.BooleanField(default=True)
     otp_code = models.CharField(max_length=6, blank=True, null=True)
     otp_created_at = models.DateTimeField(blank=True, null=True)
