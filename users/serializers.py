@@ -10,3 +10,9 @@ class CustomUserSerializer(serializers.ModelSerializer):
             'bio', 'is_email_verified', 'is_account_deletion_requested', 
             'consent_given', 'email_notifications_enabled'
         ]
+        read_only_fields = ['is_email_verified', 'is_account_deletion_requested']
+
+    def validate_email(self, value):
+        if CustomUser.objects.filter(email=value).exists():
+            raise serializers.ValidationError("This email is already in use.")
+        return value

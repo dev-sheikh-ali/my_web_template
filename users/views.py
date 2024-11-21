@@ -10,9 +10,14 @@ from datetime import timedelta
 from .forms import CustomUserSignupForm, CustomUserLoginForm, OTPVerificationForm, CustomUserProfileForm
 from .models import CustomUser
 from .utils import send_verification_email, generate_otp
-import logging
 from django.http import JsonResponse
 from django.urls import reverse
+from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
+from .utils import send_password_reset_email
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+from .serializers import CustomUserSerializer 
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +31,15 @@ def home(request):
         'profile_form': profile_form,
     })
 
+class CustomUserViewSet(viewsets.ModelViewSet):
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Ensure users can only access their own data
+        return self.queryset.filter(id=self.request.user.id)
+    
 def activate_account_view(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
@@ -187,3 +201,56 @@ def profile_view(request):
                 'profile_form': form,
             })
     return redirect('home')
+
+def password_reset_request_view(request):
+    if request.method == "POST":
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            user = CustomUser.objects.filter(email=email).first()
+            if user:
+                send_password_reset_email(user, request)
+            return JsonResponse({
+                'success': True,
+                'title': 'Password Reset',
+                'message': 'A password reset link has been sent to your email. Please check your inbox.',
+                'redirect_url': reverse('home')
+            })
+    else:
+        form = PasswordResetForm()
+    return render(request, 'users/forgot_password.html', {'form': form})
+
+def password_reset_confirm_view(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = CustomUser.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
+        user = None
+
+    if user and default_token_generator.check_token(user, token):
+        if request.method == "POST":
+            form = SetPasswordForm(user, request.POST)
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Your password has been reset successfully.")
+                return JsonResponse({
+                    'success': True,
+                    'redirect_url': reverse('home')
+                })
+            else:
+                errors = form.errors.as_json()
+                return JsonResponse({
+                    'success': False,
+                    'message': 'There were errors with your submission.',
+                    'errors': errors
+                })
+        else:
+            form = SetPasswordForm(user)
+        return render(request, 'users/password_reset.html', {
+            'form': form,
+            'uidb64': uidb64,
+            'token': token
+        })
+    else:
+        messages.error(request, "The password reset link is invalid or has expired.")
+        return redirect('home')
