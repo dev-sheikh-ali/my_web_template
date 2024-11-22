@@ -1,9 +1,11 @@
 from django.urls import path, include
+from .views import password_reset_otp_verify_view
 from .views import (
     signup_view, login_view, logout_view, profile_view,
     home, activate_account_view, otp_verification_view,
     password_reset_request_view, password_reset_confirm_view
 )
+from .social_auth_views import custom_google_login, google_login_redirect
 from rest_framework.routers import DefaultRouter
 from .views import CustomUserViewSet
 
@@ -20,5 +22,10 @@ urlpatterns = [
     path('otp-verification/', otp_verification_view, name='otp_verification'),
     path('password_reset/', password_reset_request_view, name='password_reset'),
     path('reset/<uidb64>/<token>/', password_reset_confirm_view, name='password_reset_confirm'),
-    path('api/', include(router.urls)),  # Include the router URLs
+    path('api/', include(router.urls)),
+    path('accounts/', include('allauth.urls')),
+    path('custom-google-login/', custom_google_login, name='custom_google_login'),
+    path('google-login-redirect/', google_login_redirect, name='google_login_redirect'),
+    path('otp-verification/', otp_verification_view, name='otp_verification'),
+    path('password_reset_otp/', password_reset_otp_verify_view, name='password_reset_otp_verify'),
 ]

@@ -24,8 +24,21 @@
                     {% endfor %}
                     <button type="submit" class="btn btn-primary btn-block">Login</button>
                 </form>
+
+                <!-- Forgot Password Link -->
                 <div class="text-center mt-3">
                     <a href="{% url 'password_reset' %}">Forgot Password?</a>
+                </div>
+
+                <!-- Divider for separating login options -->
+                <hr>
+
+                <!-- Login with Google -->
+                <div class="text-center mt-3">
+                    <p>or</p>
+                    <a href="{% url 'google_login_redirect' %}" class="btn btn-danger btn-block">
+                        <i class="fab fa-google"></i> Login with Google
+                    </a>
                 </div>
             </div>
         </div>

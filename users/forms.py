@@ -40,12 +40,29 @@ class CustomUserSignupForm(UserCreationForm):
         return date_of_birth
 
 class CustomUserLoginForm(AuthenticationForm):
-    username = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Enter your username'}))
+    username = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Enter your username or email'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Enter your password'}))
 
     class Meta:
         model = CustomUser
         fields = ['username', 'password']
+
+    def clean_username(self):
+        username_or_email = self.cleaned_data.get('username')
+        # Check if the input is an email
+        try:
+            user = CustomUser.objects.get(email=username_or_email)
+        except CustomUser.DoesNotExist:
+            # If not an email, check if it's a username
+            try:
+                user = CustomUser.objects.get(username=username_or_email)
+            except CustomUser.DoesNotExist:
+                raise forms.ValidationError("Invalid username or email.")
+        
+        # If the user is found, return the user instance to authenticate
+        self.cleaned_data['username'] = user.username
+        return username_or_email
+
 
 class CustomUserProfileForm(forms.ModelForm):
     date_of_birth = forms.DateField(

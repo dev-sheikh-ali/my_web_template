@@ -37,10 +37,11 @@ $(document).ready(function() {
                         $('#' + modalId).modal('hide');
                         // Show a success message modal with a redirect indication
                         showMessageModal(successMessage + ' Redirecting...', 'success');
-                        // After 2 seconds, redirect the user to the provided URL
+                        
+                        // Redirect user based on the response's URL (response.redirect_url)
                         setTimeout(function() {
-                            window.location.href = response.redirect_url;
-                        }, 2000);
+                            window.location.href = response.redirect_url; // Redirect to provided URL (e.g., homepage)
+                        }, 1000);
                     } else {
                         // If not successful, show an error message
                         showMessageModal(response.message, 'danger');
@@ -53,51 +54,26 @@ $(document).ready(function() {
                     }
                 },
                 error: function(xhr, status, error) {
-                    // Show a generic error message if the AJAX request fails
+                    // Show a generic error message if something goes wrong with the request
                     showMessageModal('An unexpected error occurred. Please try again later.', 'danger');
                 }
             });
         });
     }
-    $('#passwordResetForm').on('submit', function(event) {
-        event.preventDefault(); // Prevents the form from being submitted normally
-        var form = $(this); // Gets the form object
-        var url = form.attr('action'); // Gets the form's action URL
-        var formData = form.serialize(); // Serializes the form data for the AJAX request
 
-        // Make an AJAX POST request to submit the form data
-        $.ajax({
-            type: 'POST', // Use POST method
-            url: url, // URL to send the request to (form action URL)
-            data: formData, // The serialized form data
-            success: function(response) {
-                // If the response indicates success
-                if (response.success) {
-                    // Show a success message modal with a redirect indication
-                    showMessageModal('Your password has been reset successfully! Redirecting...', 'success');
-                    // After 2 seconds, redirect the user to the provided URL
-                    setTimeout(function() {
-                        window.location.href = response.redirect_url;
-                    }, 2000);
-                } else {
-                    // If not successful, show an error message
-                    showMessageModal(response.message, 'danger');
-                }
-            },
-            error: function(xhr, status, error) {
-                // Show a generic error message if the AJAX request fails
-                showMessageModal('An unexpected error occurred. Please try again later.', 'danger');
-            }
-        });
-    });
+    // Assuming you call handleFormSubmit for the respective forms like:
+    // For signup form
+    handleFormSubmit('signupForm', 'signupModal', 'Account created successfully!');
 
-    // Attach form submit handlers for different forms on the page
-    // These functions are invoked to handle the forms 'signupForm', 'loginForm', 'profileForm', and 'passwordResetForm'
-    handleFormSubmit('signupForm', 'signupModal', 'Signup successful!');
+    // For login form
     handleFormSubmit('loginForm', 'loginModal', 'Login successful!');
-    handleFormSubmit('profileForm', 'profileModal', 'Profile updated successfully!');
-    handleFormSubmit('passwordResetForm', 'passwordResetModal', 'Password reset email sent! Please check your inbox.');
 
-    // New handler for the password reset confirmation form
-    
+    // For profile form
+    handleFormSubmit('profileForm', 'profileModal', 'Profile updated successfully!');
+
+    // For password reset request
+    handleFormSubmit('passwordResetForm', 'passwordResetModal', 'Password reset request sent!');
+
+    // For OTP verification form
+    handleFormSubmit('otpVerificationForm', 'otpVerificationModal', 'OTP verified successfully!');
 });
