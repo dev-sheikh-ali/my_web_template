@@ -54,6 +54,7 @@ def signup_view(request):
             try:
                 send_verification_email(user)
             except Exception as e:
+                logger.error(f"Error sending verification email: {e}")
                 messages.error(request, f"Error sending verification email: {e}")
                 return redirect('home')
             request.session['pending_user_id'] = user.id
@@ -226,6 +227,7 @@ def password_reset_request_view(request):
                 try:
                     send_password_reset_email(user, request)
                 except Exception as e:
+                    logger.error(f"Error sending password reset email: {e}")
                     messages.error(request, f"Error sending password reset email: {e}")
                     return redirect('home')
                 

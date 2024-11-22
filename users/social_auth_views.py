@@ -59,8 +59,15 @@ def custom_google_login(request):
         user = social_account.user
     except SocialAccount.DoesNotExist:
         # If the user does not exist, create a new user
+        base_username = user_info['email'].split('@')[0]
+        username = base_username
+        counter = 1
+        while CustomUser.objects.filter(username=username).exists():
+            username = f"{base_username}{counter}"
+            counter += 1
+
         user = CustomUser.objects.create(
-            username=user_info['email'].split('@')[0],
+            username=username,
             email=user_info['email'],
             is_active=False,  # Set to False until email is verified
             is_email_verified=False
