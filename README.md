@@ -13,8 +13,9 @@ This is a Django project template focused on user management. It leverages Djang
 ## Project Structure
 
 ```bash
-user@user:~/Documents/Django_projects/my_web_template$ tree -I 'env|__pycache__|migrations|venv'
+sheikh@sheikh:~/Documents/Django_projects/my_web_template$ tree -I 'env|__pycache__|migrations|venv|staticfiles'
 .
+├── db.sqlite3
 ├── manage.py
 ├── my_web_template
 │   ├── asgi.py
@@ -30,11 +31,15 @@ user@user:~/Documents/Django_projects/my_web_template$ tree -I 'env|__pycache__|
     ├── __init__.py
     ├── models.py
     ├── serializers.py
+    ├── social_auth_views.py
     ├── static
-    │   ├── css
-    │   │   └── style.css
-    │   └── js
-    │       └── scripts.js
+    │   └── users
+    │       ├── css
+    │       │   └── style.css
+    │       ├── images
+    │       │   └── person.png
+    │       └── js
+    │           └── scripts.js
     ├── templates
     │   ├── pages
     │   │   ├── base.html
@@ -42,11 +47,12 @@ user@user:~/Documents/Django_projects/my_web_template$ tree -I 'env|__pycache__|
     │   │   ├── home.html
     │   │   └── navbar.html
     │   └── users
-    │       ├── email_verification.html
     │       ├── forgot_password.html
     │       ├── login_modal.html
+    │       ├── message_modal.html
     │       ├── otp_verification.html
     │       ├── password_reset.html
+    │       ├── password_reset_otp.html
     │       ├── profile_modal.html
     │       └── signup_modal.html
     ├── templatetags
@@ -54,9 +60,73 @@ user@user:~/Documents/Django_projects/my_web_template$ tree -I 'env|__pycache__|
     ├── tests.py
     ├── urls.py
     ├── utils.py
+    ├── views_auth.py
+    ├── views_password.py
     └── views.py
 
-9 directories, 31 files
-sheikh@sheikh:~/Documents/Django_projects/my_web_template$ 
+11 directories, 37 files
 
-'''
+```
+
+## Setup Instructions
+
+1. **Clone the repository:**
+    ```bash
+    git clone https://github.com/dev-sheikh-ali/my_web_template.git
+    cd my_web_template
+    ```
+
+2. **Create and activate a virtual environment:**
+    ```bash
+    python -m venv venv
+    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+    ```
+
+3. **Install the dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4. **Apply migrations:**
+    ```bash
+    python manage.py makemigrations
+    python manage.py migrate
+    ```
+
+5. **Create a superuser:**
+    ```bash
+    python manage.py createsuperuser
+    ```
+
+6. **Run the development server:**
+    ```bash
+    python manage.py runserver
+    ```
+
+7. **Access the application:**
+    Open your web browser and go to `http://127.0.0.1:8000/`.
+
+
+## API Endpoints
+
+### Authentication:
+
+- `POST /api/auth/login/` - Login with username/email and password
+- `POST /api/auth/logout/` - Logout
+- `POST /api/auth/signup/` - Signup with username/email and password
+- `POST /api/auth/social-login/` - Login with Google OAuth2
+
+### User Profile:
+
+- `GET /api/profile/` - Retrieve user profile
+- `PUT /api/profile/` - Update user profile
+- `DELETE /api/profile/` - Soft delete user account
+
+### Password Management:
+
+- `POST /api/password-reset/` - Request password reset
+- `POST /api/password-reset-confirm/` - Confirm password reset with token
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
