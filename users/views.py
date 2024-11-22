@@ -1,3 +1,4 @@
+# views.py
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -8,6 +9,9 @@ from rest_framework.permissions import IsAuthenticated
 from .forms import CustomUserSignupForm, CustomUserLoginForm, CustomUserProfileForm
 from .models import CustomUser
 from .serializers import CustomUserSerializer
+from django.utils import timezone
+from django.contrib.auth import logout
+from .utils import send_email
 import logging
 
 logger = logging.getLogger(__name__)
@@ -58,8 +62,29 @@ def profile_view(request):
             })
     return redirect('home')
 
-# logout
-def logout_view(request):
-    logout(request)
-    messages.success(request, "Logged out successfully!")
-    return redirect('home')
+@login_required
+def request_account_deletion(request):
+    if request.method == "POST":
+        user = request.user
+        user.is_account_deletion_requested = True
+        user.account_deletion_requested_at = timezone.now()
+        user.save()
+        
+        # Log the user out
+        logout(request)
+        
+        # Send email notification
+        subject = "Account Deletion Requested"
+        message = f"""
+        Hello {user.username},
+
+        You have requested to delete your account. If you change your mind, you can undo this action by logging in within 30 days.
+
+        Thank you!
+        """
+        send_email(subject, message, [user.email])
+        
+        messages.success(request, "Account deletion requested. You can undo this action by logging in within 30 days.")
+        return redirect('home')
+    else:
+        return render(request, 'users/confirm_account_deletion_modal.html')

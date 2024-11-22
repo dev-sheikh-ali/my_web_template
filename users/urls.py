@@ -4,6 +4,7 @@ from .views_auth import signup_view, login_view, logout_view, activate_account_v
 from .views_password import password_reset_request_view, password_reset_confirm_view, password_reset_otp_verify_view
 from .social_auth_views import custom_google_login, google_login_redirect
 from rest_framework.routers import DefaultRouter
+from .views import home, profile_view, CustomUserViewSet, request_account_deletion
 
 router = DefaultRouter()
 router.register(r'users', CustomUserViewSet)
@@ -23,4 +24,5 @@ urlpatterns = [
     path('custom-google-login/', custom_google_login, name='custom_google_login'),
     path('google-login-redirect/', google_login_redirect, name='google_login_redirect'),
     path('password_reset_otp/', password_reset_otp_verify_view, name='password_reset_otp_verify'),
+    path('request_account_deletion/', request_account_deletion, name='request_account_deletion'),  # New URL pattern
 ]

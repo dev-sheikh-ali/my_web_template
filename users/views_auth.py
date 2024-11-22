@@ -1,3 +1,5 @@
+# views_auth.py
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
 from django.contrib import messages
@@ -73,6 +75,23 @@ def login_view(request):
                     return JsonResponse({'success': False, 'message': message})
                 messages.error(request, message)
                 return redirect('home')
+            elif user.is_account_deletion_requested:
+                if user.is_deletion_period_expired():
+                    message = "Your account deletion period has expired. Please contact support."
+                    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                        return JsonResponse({'success': False, 'message': message})
+                    messages.error(request, message)
+                    return redirect('home')
+                else:
+                    user.is_account_deletion_requested = False
+                    user.account_deletion_requested_at = None
+                    user.save()
+                    message = "Account deletion undone. Welcome back!"
+                    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                        return JsonResponse({'success': True, 'message': message, 'redirect_url': reverse('home')})
+                    messages.success(request, message)
+                    login(request, user)
+                    return redirect('home')
             else:
                 login(request, user)
                 message = "Login successful!"

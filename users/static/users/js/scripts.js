@@ -76,4 +76,7 @@ $(document).ready(function() {
 
     // For OTP verification form
     handleFormSubmit('otpVerificationForm', 'otpVerificationModal', 'OTP verified successfully!');
+
+    // For account deletion confirmation form
+    handleFormSubmit('confirmDeleteAccountForm', 'confirmAccountDeletionModal', 'Account deletion requested successfully!');
 });
