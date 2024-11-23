@@ -107,26 +107,6 @@ sheikh@sheikh:~/Documents/Django_projects/my_web_template$ tree -I 'env|__pycach
     Open your web browser and go to `http://127.0.0.1:8000/`.
 
 
-## API Endpoints
-
-### Authentication:
-
-- `POST /api/auth/login/` - Login with username/email and password
-- `POST /api/auth/logout/` - Logout
-- `POST /api/auth/signup/` - Signup with username/email and password
-- `POST /api/auth/social-login/` - Login with Google OAuth2
-
-### User Profile:
-
-- `GET /api/profile/` - Retrieve user profile
-- `PUT /api/profile/` - Update user profile
-- `DELETE /api/profile/` - Soft delete user account
-
-### Password Management:
-
-- `POST /api/password-reset/` - Request password reset
-- `POST /api/password-reset-confirm/` - Confirm password reset with token
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
